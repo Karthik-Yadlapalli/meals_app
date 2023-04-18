@@ -41,10 +41,21 @@ class MyApp extends StatelessWidget {
       },
 
       //this is used when we need to route between pages based on actions
-      onGenerateRoute: (settings) {},
+      //Example
+      onGenerateRoute: (settings) {
+        // if(settings.name=="...."){
+        //   return ...;
+        // }else{
+        //   return ...;
+        // }
+        //return MaterialPageRoute(builder: ((context) => CategoryMealsScreen()));
+      },
 
       //this is default route, when there is unknown route
-      onUnknownRoute: (settings) {},
+      //Example
+      onUnknownRoute: (settings) {
+        //return MaterialPageRoute(builder: ((context) => CategoryMealsScreen()));
+      },
 
       //home: const Categories(),
     );
