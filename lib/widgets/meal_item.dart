@@ -3,8 +3,9 @@ import 'package:meals_app/models/meals.dart';
 import 'package:meals_app/screens/meal_detail_screen.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem(
+  MealItem(
       {super.key,
+      this.removeItem,
       required this.id,
       required this.affordability,
       required this.complexity,
@@ -18,6 +19,7 @@ class MealItem extends StatelessWidget {
   final int duration;
   final Complexity complexity;
   final Affordability affordability;
+  Function? removeItem;
 
   String get complexityText {
     switch (complexity) {
@@ -133,6 +135,12 @@ class MealItem extends StatelessWidget {
   }
 
   void stlectMeal(BuildContext context) {
-    Navigator.of(context).pushNamed(MealDetailScreen.routeName, arguments: id);
+    Navigator.of(context)
+        .pushNamed(MealDetailScreen.routename, arguments: id)
+        .then((value) {
+      if (value != null) {
+        removeItem!(value);
+      }
+    });
   }
 }

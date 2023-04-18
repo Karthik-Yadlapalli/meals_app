@@ -1,16 +1,75 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:meals_app/dummy_data/dummy_data.dart';
 import 'package:meals_app/screens/category_meals_screen.dart';
+import 'package:meals_app/screens/filters_screen.dart';
 import 'package:meals_app/screens/meal_detail_screen.dart';
-import 'screens/categories_screen.dart';
+import 'package:meals_app/screens/tabs_screen.dart';
+import 'models/meals.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favouritMeals = [];
+
+  Map<String, bool> filters = {
+    'isGlutenFree': false,
+    'isVegan': false,
+    'isVegetarian': false,
+    'isLactoseFree': false
+  };
+
+  void steFilter(Map<String, bool> filterData) {
+    setState(() {
+      filters = filterData;
+
+      _availableMeals = DUMMY_MEALS.where((element) {
+        if (filters['isGlutenFree'] == true && !element.isGlutenFree) {
+          return false;
+        }
+        if (filters['isVagan'] == true && !element.isVegan) {
+          return false;
+        }
+        if (filters['isVegetarian'] == true && !element.isVegetarian) {
+          return false;
+        }
+        if (filters['isLactoseFree'] == true && !element.isLactoseFree) {
+          return false;
+        }
+        return true;
+      }).toList();
+    });
+  }
+
+  void toggleFavourits(mealId) {
+    final elementIndex =
+        _favouritMeals.indexWhere((element) => element.id == mealId);
+    if (elementIndex >= 0) {
+      setState(() {
+        _favouritMeals.removeAt(elementIndex);
+      });
+    } else {
+      setState(() {
+        _favouritMeals
+            .add(DUMMY_MEALS.firstWhere((element) => element.id == mealId));
+      });
+    }
+  }
+
+  bool isMealFavourite(String id) {
+    return _favouritMeals.any((element) => element.id == id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +94,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       //for Named routes using pushNamed()
       routes: {
-        '/': (context) => const Categories(),
-        CategoryMealsScreen.routeName: (context) => const CategoryMealsScreen(),
-        MealDetailScreen.routeName: (context) => const MealDetailScreen()
+        '/': (context) => TabsScreen(favouritMeals: _favouritMeals),
+        CategoryMealsScreen.routeName: (context) => CategoryMealsScreen(
+              availableMeals: _availableMeals,
+            ),
+        MealDetailScreen.routename: (context) => MealDetailScreen(
+            toggelFavourits: toggleFavourits, isFavourit: isMealFavourite),
+        FiltersScreen.routeName: (context) => FiltersScreen(
+              currentFilters: filters,
+              saveFilters: steFilter,
+            )
       },
 
       //this is used when we need to route between pages based on actions
